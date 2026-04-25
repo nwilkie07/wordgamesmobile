@@ -47,3 +47,4 @@ coverage/
 *.swp
 *.swo
 *~
+assets/*.db
