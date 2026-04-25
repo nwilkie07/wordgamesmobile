@@ -17,10 +17,12 @@ import WordleGameScreen from './src/screens/WordleGameScreen';
 import WordleHistoryScreen from './src/screens/WordleHistoryScreen';
 import CrosswordGameScreen from './src/screens/CrosswordGameScreen';
 import CrosswordHistoryScreen from './src/screens/CrosswordHistoryScreen';
+import HistoryScreen from './src/screens/HistoryScreen';
 import { loadGamesFromStorage } from './src/db/games';
 
 export type RootStackParamList = {
   Home: undefined;
+  History: undefined;
   PanagramGame: { gameId?: string };
   TargetGame: { gameId?: string };
   LadderleGame: { gameId?: string };
@@ -49,6 +51,7 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Home">
         <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="History" component={HistoryScreen} options={{ title: 'All History' }} />
         <Stack.Screen name="PanagramGame" component={PanagramGameScreen} options={{ title: '7 Letters' }} />
         <Stack.Screen name="TargetGame" component={TargetGameScreen} options={{ title: 'Target' }} />
         <Stack.Screen name="LadderleGame" component={LadderleGameScreen} options={{ title: 'Ladderle' }} />

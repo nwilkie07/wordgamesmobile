@@ -8,6 +8,7 @@ import * as Clipboard from 'expo-clipboard';
 
 type HomeStackParamList = {
   Home: undefined;
+  History: undefined;
   PanagramGame: { gameId?: string };
   TargetGame: { gameId?: string };
   LadderleGame: { gameId?: string };
@@ -152,15 +153,15 @@ export default function HomeScreen() {
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={styles.historyButton}
-          onPress={() => navigation.navigate('PanagramHistory')}
+          onPress={() => navigation.navigate('History')}
         >
-          <Text style={styles.historyButtonText}>Panagram History</Text>
+          <Text style={styles.historyButtonText}>All History</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.historyButton, styles.targetHistoryButton]}
-          onPress={() => navigation.navigate('TargetHistory')}
+          onPress={() => navigation.navigate('PanagramHistory')}
         >
-          <Text style={[styles.historyButtonText, styles.targetHistoryText]}>Target History</Text>
+          <Text style={[styles.historyButtonText, styles.targetHistoryText]}>Panagram History</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.historyButton, styles.ladderleHistoryButton]}
