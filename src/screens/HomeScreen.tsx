@@ -10,13 +10,13 @@ import {
   Modal,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { NavigationHeader } from "../components/NavigationHeader";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { gameDb } from "../db/games";
 import * as Clipboard from "expo-clipboard";
+import { NavigationFooter } from "../components/NavigationFooter";
 
-type HomeStackParamList = {
+export type HomeStackParamList = {
   Home: undefined;
   History: undefined;
   PanagramGame: { gameId?: string };
@@ -167,9 +167,8 @@ export default function HomeScreen() {
   };
 
   return (
-      <SafeAreaView style={styles.container}>
-        <NavigationHeader />
-
+    <SafeAreaView style={styles.container} edges={["top"]}>
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={styles.historyButton}
@@ -338,7 +337,9 @@ export default function HomeScreen() {
             </View>
           </View>
         </Modal>
-      </SafeAreaView>
+        <NavigationFooter />
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
@@ -346,6 +347,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
   },
   buttonContainer: {
     flexDirection: "row",

@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput } from 'react-native';
-import { NavigationHeader } from '../components/NavigationHeader';
 import { loadWords, getWords } from '../db/seed';
 import { gameDb } from '../db/games';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
@@ -187,8 +186,6 @@ export default function LadderleGameScreen() {
 
   return (
     <ScrollView style={styles.container}>
-      <NavigationHeader />
-
       <View style={styles.header}>
         <Text style={styles.title}>Word Ladderle</Text>
         <Text style={styles.subtitle}>Change one letter at a time. Share a letter in the same spot.</Text>

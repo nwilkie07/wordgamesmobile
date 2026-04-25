@@ -1,11 +1,9 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { NavigationHeader } from '../components/NavigationHeader';
 
 export default function AboutScreen() {
   return (
     <ScrollView style={styles.container}>
-      <NavigationHeader />
       <View style={styles.content}>
         <Text style={styles.title}>About WordGames</Text>
         <Text style={styles.version}>Version 1.0</Text>

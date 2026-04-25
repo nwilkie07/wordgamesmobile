@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput, Alert } from 'react-native';
-import { NavigationHeader } from '../components/NavigationHeader';
 import { loadWords, getWords } from '../db/seed';
 import { gameDb } from '../db/games';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
@@ -196,8 +195,6 @@ export default function WordleGameScreen() {
 
   return (
     <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
-      <NavigationHeader />
-
       <View style={styles.header}>
         <Text style={styles.title}>Wordle</Text>
         <Text style={styles.subtitle}>Guess the word in {MAX_ATTEMPTS} tries</Text>

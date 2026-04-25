@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput, Alert } from 'react-native';
-import { NavigationHeader } from '../components/NavigationHeader';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { gameDb, type CryptoquoteGame } from '../db/games';
@@ -247,8 +246,6 @@ export default function CryptoquoteGameScreen() {
 
   return (
     <ScrollView style={styles.container}>
-      <NavigationHeader />
-
       <View style={styles.header}>
         <Text style={styles.title}>Cryptoquote</Text>
         <Text style={styles.subtitle}>Decode the quote by substituting letters</Text>

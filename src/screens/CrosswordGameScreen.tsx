@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert, Modal, TextInput } from 'react-native';
-import { NavigationHeader } from '../components/NavigationHeader';
 import { loadCrosswordData, getRandomPuzzle, getPuzzleById, type CrosswordPuzzle, type CrosswordEntry } from '../lib/crossword';
 import { gameDb, type CrosswordGame } from '../db/games';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
@@ -352,8 +351,6 @@ export default function CrosswordGameScreen() {
 
   return (
     <ScrollView style={styles.container}>
-      <NavigationHeader />
-
       <View style={styles.header}>
         <Text style={styles.title}>Crossword</Text>
         {currentEntry && (
