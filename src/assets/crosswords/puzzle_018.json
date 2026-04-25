@@ -1,0 +1,414 @@
+{
+  "size": 15,
+  "grid": [
+    [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      "U",
+      "M",
+      "P",
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      "S",
+      "R",
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      "S",
+      "U",
+      "M",
+      null,
+      null,
+      null
+    ],
+    [
+      "O",
+      "U",
+      null,
+      "E",
+      "B",
+      "B",
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      "H",
+      "B"
+    ],
+    [
+      "L",
+      "M",
+      "N",
+      "O",
+      "W",
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      "A",
+      "E"
+    ],
+    [
+      null,
+      null,
+      null,
+      null,
+      null,
+      "M",
+      "U",
+      "M",
+      null,
+      null,
+      null,
+      null,
+      "I",
+      "W",
+      "E"
+    ],
+    [
+      null,
+      null,
+      "S",
+      null,
+      null,
+      "D",
+      "U",
+      "D",
+      null,
+      "L",
+      "O",
+      "P",
+      "R",
+      null,
+      null
+    ],
+    [
+      null,
+      "R",
+      "O",
+      "F",
+      null,
+      null,
+      null,
+      "F",
+      null,
+      null,
+      null,
+      null,
+      "E",
+      null,
+      null
+    ],
+    [
+      null,
+      "A",
+      "D",
+      "O",
+      null,
+      null,
+      null,
+      "A",
+      null,
+      null,
+      "S",
+      "P",
+      "Y",
+      null,
+      "O"
+    ],
+    [
+      null,
+      "G",
+      null,
+      "X",
+      null,
+      null,
+      null,
+      "N",
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      "P"
+    ],
+    [
+      null,
+      null,
+      null,
+      null,
+      "F",
+      null,
+      null,
+      null,
+      null,
+      "L",
+      "A",
+      "B",
+      null,
+      null,
+      "T"
+    ],
+    [
+      null,
+      "K",
+      "I",
+      "P",
+      "A",
+      null,
+      null,
+      "V",
+      "E",
+      "T",
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      null,
+      null,
+      null,
+      null,
+      "B",
+      null,
+      "N",
+      "U",
+      "T",
+      null,
+      "T",
+      "A",
+      "B",
+      null,
+      "M"
+    ],
+    [
+      null,
+      "S",
+      "K",
+      "I",
+      null,
+      null,
+      "S",
+      "P",
+      "E",
+      "N",
+      "D",
+      "I",
+      "N",
+      "G",
+      "A"
+    ],
+    [
+      null,
+      null,
+      null,
+      "O",
+      "L",
+      "D",
+      null,
+      null,
+      "V",
+      "I",
+      "E",
+      null,
+      null,
+      null,
+      "Y"
+    ],
+    [
+      null,
+      null,
+      null,
+      null,
+      null,
+      "S",
+      "H",
+      "E",
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ]
+  ],
+  "across": [
+    {
+      "number": 1,
+      "answer": "UMP",
+      "clue": ""
+    },
+    {
+      "number": 4,
+      "answer": "SUM",
+      "clue": ""
+    },
+    {
+      "number": 6,
+      "answer": "EBB",
+      "clue": ""
+    },
+    {
+      "number": null,
+      "answer": "NOW",
+      "clue": ""
+    },
+    {
+      "number": 12,
+      "answer": "MUM",
+      "clue": ""
+    },
+    {
+      "number": 17,
+      "answer": "DUD",
+      "clue": ""
+    },
+    {
+      "number": 18,
+      "answer": "LOP",
+      "clue": ""
+    },
+    {
+      "number": 22,
+      "answer": "SPY",
+      "clue": ""
+    },
+    {
+      "number": 25,
+      "answer": "LAB",
+      "clue": ""
+    },
+    {
+      "number": 26,
+      "answer": "KIP",
+      "clue": ""
+    },
+    {
+      "number": 27,
+      "answer": "VET",
+      "clue": ""
+    },
+    {
+      "number": 29,
+      "answer": "NUT",
+      "clue": ""
+    },
+    {
+      "number": 30,
+      "answer": "TAB",
+      "clue": ""
+    },
+    {
+      "number": 34,
+      "answer": "SKI",
+      "clue": ""
+    },
+    {
+      "number": 36,
+      "answer": "SPENDING",
+      "clue": ""
+    },
+    {
+      "number": 38,
+      "answer": "OLD",
+      "clue": ""
+    },
+    {
+      "number": 40,
+      "answer": "VIE",
+      "clue": ""
+    },
+    {
+      "number": 41,
+      "answer": "SHE",
+      "clue": ""
+    }
+  ],
+  "down": [
+    {
+      "number": 2,
+      "answer": "SOL",
+      "clue": ""
+    },
+    {
+      "number": 3,
+      "answer": "RUM",
+      "clue": ""
+    },
+    {
+      "number": 8,
+      "answer": "HAW",
+      "clue": ""
+    },
+    {
+      "number": 9,
+      "answer": "BEE",
+      "clue": ""
+    },
+    {
+      "number": 15,
+      "answer": "IRE",
+      "clue": ""
+    },
+    {
+      "number": 16,
+      "answer": "SOD",
+      "clue": ""
+    },
+    {
+      "number": 19,
+      "answer": "RAG",
+      "clue": ""
+    },
+    {
+      "number": 20,
+      "answer": "FOX",
+      "clue": ""
+    },
+    {
+      "number": null,
+      "answer": "FAN",
+      "clue": ""
+    },
+    {
+      "number": 23,
+      "answer": "OPT",
+      "clue": ""
+    },
+    {
+      "number": 24,
+      "answer": "FAB",
+      "clue": ""
+    },
+    {
+      "number": 33,
+      "answer": "MAY",
+      "clue": ""
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "expo": {
+    "name": "WordGames",
+    "slug": "WordGames",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.nwilkie.WordGames"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false,
+      "package": "com.nwilkie.WordGames",
+      "assets": ["./src/assets/3of6game.txt", "./src/assets/clues.json.gz", "./src/assets/cryptoquotes.txt.gz"]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}
