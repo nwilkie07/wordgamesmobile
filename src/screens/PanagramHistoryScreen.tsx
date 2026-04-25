@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
 import { gameDb, type PanagramGame } from '../db/games';
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useAppNavigation, ScreenName } from '../context/NavigationContext';
 import { formatDate, confirmDelete } from '../lib/utils';
 
 type RootStackParamList = {
@@ -10,8 +9,8 @@ type RootStackParamList = {
   PanagramGame: { gameId?: string };
 };
 
-export default function PanagramHistoryScreen() {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+export default function PanagramHistoryScreen({ navigation }: { navigation?: any }) {
+  const { navigate } = useAppNavigation();
   const [games, setGames] = useState<PanagramGame[]>([]);
 
   useEffect(() => {
@@ -19,7 +18,7 @@ export default function PanagramHistoryScreen() {
   }, []);
 
   const handlePlayGame = (gameId: string) => {
-    navigation.navigate('PanagramGame', { gameId });
+    navigate('PanagramGame' as ScreenName, { gameId });
   };
 
   const handleDeleteGame = async (e: any, gameId: string) => {
@@ -36,7 +35,7 @@ export default function PanagramHistoryScreen() {
         <Text style={styles.emptyText}>No games played yet.</Text>
         <TouchableOpacity
           style={styles.newGameButton}
-          onPress={() => navigation.navigate('PanagramGame', {})}
+          onPress={() => navigate('PanagramGame' as ScreenName, {})}
         >
           <Text style={styles.newGameButtonText}>Play a New Game</Text>
         </TouchableOpacity>
@@ -48,7 +47,7 @@ export default function PanagramHistoryScreen() {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Panagram Game History</Text>
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('Home')}>
+        <TouchableOpacity style={styles.backButton} onPress={() => navigate('Home' as ScreenName)}>
           <Text style={styles.backButtonText}>Back to Home</Text>
         </TouchableOpacity>
       </View>

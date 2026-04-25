@@ -11,7 +11,7 @@ export async function loadClues(): Promise<void> {
   loading = true;
   loadPromise = (async () => {
     try {
-      const response = await fetch(require('../assets/clues.json.gz'));
+      const response = await fetch(require('../../assets/clues.db.gz'));
       const buffer = await response.arrayBuffer();
       const decompressed = pako.ungzip(new Uint8Array(buffer));
       const text = new TextDecoder().decode(decompressed);
@@ -20,7 +20,7 @@ export async function loadClues(): Promise<void> {
     } catch (e) {
       console.error('[clues] Failed to load clues:', e);
       try {
-        const text = require('../assets/clues.json');
+        const text = require('../../assets/crossword_clues.json');
         cluesCache = typeof text === 'string' ? JSON.parse(text) : text;
         console.log('[clues] Loaded from fallback');
       } catch (fallbackErr) {

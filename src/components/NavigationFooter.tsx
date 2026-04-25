@@ -1,46 +1,60 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { House, History, Settings } from "lucide-react-native";
-import { useNavigation } from "@react-navigation/native";
-import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { House, History, Settings, Gamepad2 } from "lucide-react-native";
+import { useAppNavigation, ScreenName } from "../context/NavigationContext";
 
-interface NavItemProps {
-  label: string;
-  onPress?: () => void;
+interface NavigationFooterProps {
+  lastGame?: { gameType: string; gameId: string } | null;
 }
 
-const NavItem = ({ label, onPress }: NavItemProps) => {
-  const getIcon = () => {
-    switch (label) {
-      case "Home":
-        return <House size={24} color="#374151" />;
-      case "History":
-        return <History size={24} color="#374151" />;
-      case "Settings":
-        return <Settings size={24} color="#374151" />;
-      default:
-        return null;
-    }
+export const NavigationFooter = ({ lastGame }: NavigationFooterProps) => {
+  const insets = useSafeAreaInsets();
+  const { currentScreen, navigate } = useAppNavigation();
+
+  const handleNavigate = (screen: ScreenName) => {
+    navigate(screen);
+  };
+
+  const handlePlayGame = () => {
+    if (!lastGame) return;
+    const screenName = lastGame.gameType.charAt(0).toUpperCase() + lastGame.gameType.slice(1) + 'Game';
+    navigate(screenName as ScreenName);
   };
 
   return (
-    <TouchableOpacity onPress={onPress} style={styles.navItem}>
-      {getIcon()}
-      <Text style={styles.navText}>{label}</Text>
-    </TouchableOpacity>
-  );
-};
-
-export const NavigationFooter = () => {
-  const insets = useSafeAreaInsets();
-  const navigation = useNavigation<NativeStackNavigationProp<any>>();
-
-  return (
     <View style={[styles.container, { paddingBottom: insets.bottom + 8 }]}>
-      <NavItem label="Home" onPress={() => navigation.navigate("Home")} />
-      <NavItem label="History" onPress={() => navigation.navigate("History")} />
-      <NavItem label="Settings" onPress={() => navigation.navigate("Settings")} />
+      <TouchableOpacity
+        style={styles.navItem}
+        onPress={() => handleNavigate('Home')}
+      >
+        <House size={24} color={currentScreen === 'Home' ? '#2563EB' : '#374151'} />
+        <Text style={[styles.navText, currentScreen === 'Home' && styles.navTextActive]}>Home</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.navItem}
+        onPress={handlePlayGame}
+      >
+        <Gamepad2 size={24} color="#374151" />
+        <Text style={styles.navText}>Play</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.navItem}
+        onPress={() => handleNavigate('History')}
+      >
+        <History size={24} color={currentScreen === 'History' ? '#2563EB' : '#374151'} />
+        <Text style={[styles.navText, currentScreen === 'History' && styles.navTextActive]}>History</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.navItem}
+        onPress={() => handleNavigate('Settings')}
+      >
+        <Settings size={24} color={currentScreen === 'Settings' ? '#2563EB' : '#374151'} />
+        <Text style={[styles.navText, currentScreen === 'Settings' && styles.navTextActive]}>Settings</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -64,5 +78,9 @@ const styles = StyleSheet.create({
     fontSize: 11,
     marginTop: 4,
     color: "#6b7280",
+  },
+  navTextActive: {
+    color: '#2563EB',
+    fontWeight: '600',
   },
 });

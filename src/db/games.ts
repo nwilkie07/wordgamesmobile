@@ -1,5 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+const LAST_ACTIVE_GAME_KEY = 'wordgames_last_active_game';
+
 export type PanagramGame = {
   id: string;
   letters: string;
@@ -44,7 +46,7 @@ export type CryptoquoteGame = {
   updatedAt: string;
 };
 
-export type WordleGame = {
+export type WordGuessGame = {
   id: string;
   targetWord: string;
   guessesJson: string;
@@ -67,14 +69,14 @@ const PANAGRAM_STORAGE_KEY = 'wordgames_panagram_games';
 const TARGET_STORAGE_KEY = 'wordgames_target_games';
 const LADDERLE_STORAGE_KEY = 'wordgames_ladderle_games';
 const CRYPTOQUOTE_STORAGE_KEY = 'wordgames_cryptoquote_games';
-const WORDLE_STORAGE_KEY = 'wordgames_wordle_games';
+const WORDGUESS_STORAGE_KEY = 'wordgames_wordguess_games';
 const CROSSWORD_STORAGE_KEY = 'wordgames_crossword_games';
 
 let panagramGames: PanagramGame[] = [];
 let targetGames: TargetGame[] = [];
 let ladderleGames: LadderleGame[] = [];
 let cryptoquoteGames: CryptoquoteGame[] = [];
-let wordleGames: WordleGame[] = [];
+let wordguessGames: WordGuessGame[] = [];
 let crosswordGames: CrosswordGame[] = [];
 
 export async function loadGamesFromStorage(): Promise<void> {
@@ -87,12 +89,30 @@ export async function loadGamesFromStorage(): Promise<void> {
     if (lData) ladderleGames = JSON.parse(lData);
     const cData = await AsyncStorage.getItem(CRYPTOQUOTE_STORAGE_KEY);
     if (cData) cryptoquoteGames = JSON.parse(cData);
-    const wData = await AsyncStorage.getItem(WORDLE_STORAGE_KEY);
-    if (wData) wordleGames = JSON.parse(wData);
+    const wgData = await AsyncStorage.getItem(WORDGUESS_STORAGE_KEY);
+    if (wgData) wordguessGames = JSON.parse(wgData);
     const cwData = await AsyncStorage.getItem(CROSSWORD_STORAGE_KEY);
     if (cwData) crosswordGames = JSON.parse(cwData);
   } catch (e) {
     console.error('Failed to load games', e);
+  }
+}
+
+export async function getLastActiveGame(): Promise<{ gameType: string; gameId: string } | null> {
+  try {
+    const data = await AsyncStorage.getItem(LAST_ACTIVE_GAME_KEY);
+    if (data) return JSON.parse(data);
+    return null;
+  } catch (e) {
+    return null;
+  }
+}
+
+export async function setLastActiveGame(gameType: string, gameId: string): Promise<void> {
+  try {
+    await AsyncStorage.setItem(LAST_ACTIVE_GAME_KEY, JSON.stringify({ gameType, gameId }));
+  } catch (e) {
+    console.error('Failed to save last active game', e);
   }
 }
 
@@ -112,8 +132,8 @@ async function saveCryptoquoteToStorage(): Promise<void> {
   await AsyncStorage.setItem(CRYPTOQUOTE_STORAGE_KEY, JSON.stringify(cryptoquoteGames));
 }
 
-async function saveWordleToStorage(): Promise<void> {
-  await AsyncStorage.setItem(WORDLE_STORAGE_KEY, JSON.stringify(wordleGames));
+async function saveWordGuessToStorage(): Promise<void> {
+  await AsyncStorage.setItem(WORDGUESS_STORAGE_KEY, JSON.stringify(wordguessGames));
 }
 
 async function saveCrosswordToStorage(): Promise<void> {
@@ -285,43 +305,43 @@ export const gameDb = {
       return true;
     },
   },
-  wordle: {
-    async create(data: Omit<WordleGame, 'id' | 'createdAt' | 'updatedAt'>): Promise<WordleGame> {
+  wordguess: {
+    async create(data: Omit<WordGuessGame, 'id' | 'createdAt' | 'updatedAt'>): Promise<WordGuessGame> {
       const now = new Date().toISOString();
-      const game: WordleGame = {
+      const game: WordGuessGame = {
         id: generateId(),
         ...data,
         createdAt: now,
         updatedAt: now,
       };
-      wordleGames.push(game);
-      await saveWordleToStorage();
+      wordguessGames.push(game);
+      await saveWordGuessToStorage();
       return game;
     },
-    async update(id: string, data: Partial<WordleGame>): Promise<WordleGame | null> {
-      const idx = wordleGames.findIndex((g) => g.id === id);
+    async update(id: string, data: Partial<WordGuessGame>): Promise<WordGuessGame | null> {
+      const idx = wordguessGames.findIndex((g) => g.id === id);
       if (idx === -1) return null;
-      wordleGames[idx] = {
-        ...wordleGames[idx],
+      wordguessGames[idx] = {
+        ...wordguessGames[idx],
         ...data,
         updatedAt: new Date().toISOString(),
       };
-      await saveWordleToStorage();
-      return wordleGames[idx];
+      await saveWordGuessToStorage();
+      return wordguessGames[idx];
     },
-    findById(id: string): WordleGame | undefined {
-      return wordleGames.find((g) => g.id === id);
+    findById(id: string): WordGuessGame | undefined {
+      return wordguessGames.find((g) => g.id === id);
     },
-    findAll(): WordleGame[] {
-      return [...wordleGames].sort(
+    findAll(): WordGuessGame[] {
+      return [...wordguessGames].sort(
         (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
       );
     },
     async remove(id: string): Promise<boolean> {
-      const idx = wordleGames.findIndex((g) => g.id === id);
+      const idx = wordguessGames.findIndex((g) => g.id === id);
       if (idx === -1) return false;
-      wordleGames.splice(idx, 1);
-      await saveWordleToStorage();
+      wordguessGames.splice(idx, 1);
+      await saveWordGuessToStorage();
       return true;
     },
   },

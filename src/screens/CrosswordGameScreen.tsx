@@ -2,8 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert, Modal, TextInput } from 'react-native';
 import { loadCrosswordData, getRandomPuzzle, getPuzzleById, type CrosswordPuzzle, type CrosswordEntry } from '../lib/crossword';
 import { gameDb, type CrosswordGame } from '../db/games';
-import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useAppNavigation, ScreenName } from '../context/NavigationContext';
 
 type RootStackParamList = {
   Home: undefined;
@@ -18,10 +17,9 @@ interface CellState {
   revealed: boolean;
 }
 
-export default function CrosswordGameScreen() {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const route = useRoute<RouteProp<RootStackParamList, 'CrosswordGame'>>();
-  const gameIdFromRoute = route.params?.gameId;
+export default function CrosswordGameScreen({ route }: { route?: any, navigation?: any }) {
+  const { navigate } = useAppNavigation();
+  const gameIdFromRoute = route?.params?.gameId;
 
   const [puzzle, setPuzzle] = useState<CrosswordPuzzle | null>(null);
   const [grid, setGrid] = useState<(CellState | null)[][]>([]);
@@ -429,7 +427,7 @@ export default function CrosswordGameScreen() {
         </View>
       )}
 
-      <TouchableOpacity style={styles.homeButton} onPress={() => navigation.navigate('Home')}>
+      <TouchableOpacity style={styles.homeButton} onPress={() => navigate('Home' as ScreenName)}>
         <Text style={styles.homeButtonText}>HOME</Text>
       </TouchableOpacity>
 

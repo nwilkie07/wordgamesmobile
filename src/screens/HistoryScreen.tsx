@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList, ScrollView } from 'react-native';
-import { gameDb, type PanagramGame, type TargetGame, type LadderleGame, type CryptoquoteGame, type WordleGame, type CrosswordGame } from '../db/games';
-import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { gameDb, type PanagramGame, type TargetGame, type LadderleGame, type CryptoquoteGame, type WordGuessGame, type CrosswordGame } from '../db/games';
+import { useAppNavigation, ScreenName } from '../context/NavigationContext';
 import { formatDate, confirmDelete } from '../lib/utils';
 
-type GameType = 'all' | 'panagram' | 'target' | 'ladderle' | 'cryptoquote' | 'wordle' | 'crossword';
+type GameType = 'all' | 'panagram' | 'target' | 'ladderle' | 'cryptoquote' | 'wordguess' | 'crossword';
 
 type RootStackParamList = {
   Home: undefined;
@@ -29,7 +28,7 @@ interface UnifiedGameItem {
   gameType: GameType;
   date: string;
   completed: boolean;
-  data: PanagramGame | TargetGame | LadderleGame | CryptoquoteGame | WordleGame | CrosswordGame;
+  data: PanagramGame | TargetGame | LadderleGame | CryptoquoteGame | WordGuessGame | CrosswordGame;
 }
 
 const GAME_FILTERS: { key: GameType; label: string; color: string }[] = [
@@ -38,12 +37,12 @@ const GAME_FILTERS: { key: GameType; label: string; color: string }[] = [
   { key: 'target', label: 'Target', color: '#EA580C' },
   { key: 'ladderle', label: 'Ladderle', color: '#10B981' },
   { key: 'cryptoquote', label: 'Cryptoquote', color: '#7C3AED' },
-  { key: 'wordle', label: 'Wordle', color: '#374151' },
+  { key: 'wordguess', label: 'WordGuess', color: '#374151' },
   { key: 'crossword', label: 'Crossword', color: '#059669' },
 ];
 
-export default function HistoryScreen() {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+export default function HistoryScreen({ navigation }: { navigation?: any }) {
+  const { navigate } = useAppNavigation();
   const [selectedFilter, setSelectedFilter] = useState<GameType>('all');
   const [games, setGames] = useState<UnifiedGameItem[]>([]);
 
@@ -102,12 +101,12 @@ export default function HistoryScreen() {
       }
     }
 
-    if (selectedFilter === 'all' || selectedFilter === 'wordle') {
-      const wordleGames = gameDb.wordle.findAll();
-      for (const game of wordleGames) {
+    if (selectedFilter === 'all' || selectedFilter === 'wordguess') {
+      const wordguessGames = gameDb.wordguess.findAll();
+      for (const game of wordguessGames) {
         allGames.push({
           id: game.id,
-          gameType: 'wordle',
+          gameType: 'wordguess',
           date: game.updatedAt,
           completed: game.completed,
           data: game,
@@ -132,31 +131,29 @@ export default function HistoryScreen() {
     setGames(allGames);
   }, [selectedFilter]);
 
-  useFocusEffect(
-    useCallback(() => {
-      loadGames();
-    }, [loadGames])
-  );
+  useEffect(() => {
+    loadGames();
+  }, [loadGames]);
 
   const handlePlayGame = (item: UnifiedGameItem) => {
     switch (item.gameType) {
       case 'panagram':
-        navigation.navigate('PanagramGame', { gameId: item.id });
+        navigate('PanagramGame' as ScreenName, { gameId: item.id });
         break;
       case 'target':
-        navigation.navigate('TargetGame', { gameId: item.id });
+        navigate('TargetGame' as ScreenName, { gameId: item.id });
         break;
       case 'ladderle':
-        navigation.navigate('LadderleGame', { gameId: item.id });
+        navigate('LadderleGame' as ScreenName, { gameId: item.id });
         break;
       case 'cryptoquote':
-        navigation.navigate('CryptoquoteGame', { gameId: item.id });
+        navigate('CryptoquoteGame' as ScreenName, { gameId: item.id });
         break;
-      case 'wordle':
-        navigation.navigate('WordleGame', { gameId: item.id });
+      case 'wordguess':
+        navigate('WordGuessGame' as ScreenName, { gameId: item.id });
         break;
       case 'crossword':
-        navigation.navigate('CrosswordGame', { gameId: item.id });
+        navigate('CrosswordGame' as ScreenName, { gameId: item.id });
         break;
     }
   };
@@ -177,8 +174,8 @@ export default function HistoryScreen() {
         case 'cryptoquote':
           await gameDb.cryptoquote.remove(item.id);
           break;
-        case 'wordle':
-          await gameDb.wordle.remove(item.id);
+        case 'wordguess':
+          await gameDb.wordguess.remove(item.id);
           break;
         case 'crossword':
           await gameDb.crossword.remove(item.id);
@@ -198,8 +195,8 @@ export default function HistoryScreen() {
         return `Ladderle: ${(item.data as LadderleGame).targetWord.toUpperCase()}`;
       case 'cryptoquote':
         return `Cryptoquote: ${((item.data as CryptoquoteGame).encryptedQuote.slice(0, 30))}...`;
-      case 'wordle':
-        return `Wordle: ${(item.data as WordleGame).targetWord.toUpperCase()}`;
+      case 'wordguess':
+        return `WordGuess: ${(item.data as WordGuessGame).targetWord.toUpperCase()}`;
       case 'crossword':
         return `Crossword: #${(item.data as CrosswordGame).puzzleId.replace('puzzle_', '')}`;
       default:
@@ -213,7 +210,7 @@ export default function HistoryScreen() {
       case 'target': return 'T';
       case 'ladderle': return 'LD';
       case 'cryptoquote': return 'CQ';
-      case 'wordle': return 'W';
+      case 'wordguess': return 'W';
       case 'crossword': return 'XW';
       default: return '?';
     }
@@ -247,8 +244,8 @@ export default function HistoryScreen() {
           {item.gameType === 'panagram' && (
             <Text style={styles.detailText}>Score: {(item.data as PanagramGame).score} pts</Text>
           )}
-          {item.gameType === 'wordle' && (
-            <Text style={styles.detailText}>{(item.data as WordleGame).won ? 'Won' : 'Lost'}</Text>
+          {item.gameType === 'wordguess' && (
+            <Text style={styles.detailText}>{(item.data as WordGuessGame).won ? 'Won' : 'Lost'}</Text>
           )}
           {item.gameType === 'ladderle' && (
             <Text style={styles.detailText}>{(item.data as LadderleGame).won ? 'Won' : 'Lost'}</Text>
@@ -269,7 +266,7 @@ export default function HistoryScreen() {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Game History</Text>
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('Home')}>
+        <TouchableOpacity style={styles.backButton} onPress={() => navigate('Home' as ScreenName)}>
           <Text style={styles.backButtonText}>Home</Text>
         </TouchableOpacity>
       </View>

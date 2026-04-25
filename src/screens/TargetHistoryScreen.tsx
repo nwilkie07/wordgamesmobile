@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
 import { gameDb, type TargetGame } from '../db/games';
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useAppNavigation, ScreenName } from '../context/NavigationContext';
 import { formatDate, confirmDelete } from '../lib/utils';
 
 type RootStackParamList = {
@@ -10,8 +9,8 @@ type RootStackParamList = {
   TargetGame: { gameId?: string };
 };
 
-export default function TargetHistoryScreen() {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+export default function TargetHistoryScreen({ navigation }: { navigation?: any }) {
+  const { navigate } = useAppNavigation();
   const [games, setGames] = useState<TargetGame[]>([]);
 
   useEffect(() => {
@@ -19,7 +18,7 @@ export default function TargetHistoryScreen() {
   }, []);
 
   const handlePlayGame = (gameId: string) => {
-    navigation.navigate('TargetGame', { gameId });
+    navigate('TargetGame' as ScreenName, { gameId });
   };
 
   const handleDeleteGame = async (e: any, gameId: string) => {
@@ -36,7 +35,7 @@ export default function TargetHistoryScreen() {
         <Text style={styles.emptyText}>No games played yet.</Text>
         <TouchableOpacity
           style={styles.newGameButton}
-          onPress={() => navigation.navigate('TargetGame', {})}
+          onPress={() => navigate('TargetGame' as ScreenName, {})}
         >
           <Text style={styles.newGameButtonText}>Play a New Game</Text>
         </TouchableOpacity>
@@ -48,7 +47,7 @@ export default function TargetHistoryScreen() {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Target Game History</Text>
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('Home')}>
+        <TouchableOpacity style={styles.backButton} onPress={() => navigate('Home' as ScreenName)}>
           <Text style={styles.backButtonText}>Back to Home</Text>
         </TouchableOpacity>
       </View>

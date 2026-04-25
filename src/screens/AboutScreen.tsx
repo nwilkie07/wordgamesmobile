@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 
-export default function AboutScreen() {
+export default function AboutScreen({ navigation }: { navigation?: any }) {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.content}>

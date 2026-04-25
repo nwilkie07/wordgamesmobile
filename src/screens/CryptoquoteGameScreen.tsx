@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput, Alert } from 'react-native';
-import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useAppNavigation, ScreenName } from '../context/NavigationContext';
 import { gameDb, type CryptoquoteGame } from '../db/games';
-import pako from 'pako';
+import { initQuotesDatabase, getRandomQuote } from '../db/quotes';
 
 type RootStackParamList = {
   Home: undefined;
@@ -21,10 +20,9 @@ interface DecryptedMap {
   [key: string]: string;
 }
 
-export default function CryptoquoteGameScreen() {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const route = useRoute<RouteProp<RootStackParamList, 'CryptoquoteGame'>>();
-  const gameIdFromRoute = route.params?.gameId;
+export default function CryptoquoteGameScreen({ route }: { route?: any, navigation?: any }) {
+  const { navigate } = useAppNavigation();
+  const gameIdFromRoute = route?.params?.gameId;
 
   const [quote, setQuote] = useState<string>('');
   const [author, setAuthor] = useState<string>('');
@@ -65,34 +63,17 @@ export default function CryptoquoteGameScreen() {
     return { cipher, author: '', cipherMap: map };
   }, [getAllLetters]);
 
-  const loadQuotes = useCallback(async (): Promise<{ quote: string; author: string }[]> => {
-    try {
-      const response = await fetch(require('../assets/cryptoquotes.txt.gz'));
-      const buffer = await response.arrayBuffer();
-      const decompressed = pako.ungzip(new Uint8Array(buffer));
-      const text = new TextDecoder().decode(decompressed);
-      const lines = text.split('\n').filter((line: string) => line.trim());
-      return lines.map((line: string) => {
-        const match = line.match(/"([^"]+)"\s*-\s*(.+)/);
-        if (match) {
-          return { quote: match[1].trim(), author: match[2].trim() };
-        }
-        return { quote: line.trim(), author: 'Unknown' };
-      });
-    } catch (e) {
-      console.error('Failed to load quotes:', e);
-      return [];
-    }
-  }, []);
-
   const initializeGame = useCallback(async () => {
     try {
-      const quotes = await loadQuotes();
-      if (quotes.length === 0) {
+      await initQuotesDatabase();
+      const quoteData = await getRandomQuote();
+      if (!quoteData) {
         Alert.alert('Error', 'No quotes available');
-        navigation.navigate('Home');
+        navigate('Home' as ScreenName);
         return;
       }
+
+      const { quote: randomQuote, author: quoteAuthor } = quoteData;
 
       if (gameIdFromRoute) {
         const savedGame = gameDb.cryptoquote.findById(gameIdFromRoute);
@@ -108,18 +89,17 @@ export default function CryptoquoteGameScreen() {
         }
       }
 
-      const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
-      const { cipher, cipherMap: newCipherMap } = createCipher(randomQuote.quote);
+      const { cipher, cipherMap: newCipherMap } = createCipher(randomQuote);
 
       setQuote(cipher);
-      setAuthor(randomQuote.author);
+      setAuthor(quoteAuthor);
       setCipherMap(newCipherMap);
       setDecryptedMap({});
 
       const newGame = await gameDb.cryptoquote.create({
         encryptedQuote: cipher,
-        decryptedQuote: randomQuote.quote,
-        author: randomQuote.author,
+        decryptedQuote: randomQuote,
+        author: quoteAuthor,
         cipherMapJson: JSON.stringify(newCipherMap),
         decryptedMapJson: '{}',
         completed: false,
@@ -130,7 +110,7 @@ export default function CryptoquoteGameScreen() {
       Alert.alert('Error', 'Failed to load game');
     }
     setLoading(false);
-  }, [gameIdFromRoute, loadQuotes, createCipher, navigation]);
+  }, [gameIdFromRoute, createCipher]);
 
   useEffect(() => {
     initializeGame();
@@ -208,12 +188,13 @@ export default function CryptoquoteGameScreen() {
   };
 
   const handleNewQuote = async () => {
-    const quotes = await loadQuotes();
-    const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
-    const { cipher, cipherMap: newCipherMap } = createCipher(randomQuote.quote);
+    const quoteData = await getRandomQuote();
+    if (!quoteData) return;
+    const { quote: newPlainQuote, author: newAuthor } = quoteData;
+    const { cipher, cipherMap: newCipherMap } = createCipher(newPlainQuote);
 
     setQuote(cipher);
-    setAuthor(randomQuote.author);
+    setAuthor(newAuthor);
     setCipherMap(newCipherMap);
     setDecryptedMap({});
     setSelectedCipher(null);
@@ -221,8 +202,8 @@ export default function CryptoquoteGameScreen() {
 
     const newGame = await gameDb.cryptoquote.create({
       encryptedQuote: cipher,
-      decryptedQuote: randomQuote.quote,
-      author: randomQuote.author,
+      decryptedQuote: newPlainQuote,
+      author: newAuthor,
       cipherMapJson: JSON.stringify(newCipherMap),
       decryptedMapJson: '{}',
       completed: false,
@@ -231,7 +212,7 @@ export default function CryptoquoteGameScreen() {
   };
 
   const handleBackToHome = () => {
-    navigation.navigate('Home');
+    navigate('Home' as ScreenName);
   };
 
   if (loading) {

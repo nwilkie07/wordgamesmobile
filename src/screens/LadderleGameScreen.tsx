@@ -2,8 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput } from 'react-native';
 import { loadWords, getWords } from '../db/seed';
 import { gameDb } from '../db/games';
-import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useAppNavigation, ScreenName } from '../context/NavigationContext';
 
 type RootStackParamList = {
   Home: undefined;
@@ -14,10 +13,9 @@ type RootStackParamList = {
 const MAX_ATTEMPTS = 6;
 const WORD_LENGTH = 5;
 
-export default function LadderleGameScreen() {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const route = useRoute<RouteProp<RootStackParamList, 'LadderleGame'>>();
-  const gameIdFromRoute = route.params?.gameId;
+export default function LadderleGameScreen({ route }: { route?: any, navigation?: any }) {
+  const { navigate } = useAppNavigation();
+  const gameIdFromRoute = route?.params?.gameId;
 
   const [targetWord, setTargetWord] = useState<string>('');
   const [attempts, setAttempts] = useState<string[]>([]);
@@ -168,7 +166,7 @@ export default function LadderleGameScreen() {
   };
 
   const handleBackToHome = () => {
-    navigation.navigate('Home');
+    navigate('Home' as ScreenName);
   };
 
   const handleDelete = () => {

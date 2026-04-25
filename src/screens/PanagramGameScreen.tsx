@@ -5,8 +5,7 @@ import { WordDistributionTable } from '../components/WordDistributionTable';
 import { TwoLetterPrefixTable } from '../components/TwoLetterPrefixTable';
 import { loadWords, getWords } from '../db/seed';
 import { gameDb } from '../db/games';
-import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useAppNavigation, ScreenName } from '../context/NavigationContext';
 import { getDefinition } from '../lib/definitions';
 import { loadClues, getClues } from '../lib/clues';
 
@@ -69,10 +68,9 @@ function generatePuzzle(allWords: { word: string; length: number }[]) {
   return { letters: randomSet, centerLetter, validWords };
 }
 
-export default function PanagramGameScreen() {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const route = useRoute<RouteProp<RootStackParamList, 'PanagramGame'>>();
-  const gameIdFromRoute = route.params?.gameId;
+export default function PanagramGameScreen({ route }: { route?: any, navigation?: any }) {
+  const { navigate } = useAppNavigation();
+  const gameIdFromRoute = route?.params?.gameId;
 
   const [puzzle, setPuzzle] = useState<{
     letters: string;
@@ -237,7 +235,7 @@ export default function PanagramGameScreen() {
   };
 
   const handleBackToHome = () => {
-    navigation.navigate('Home');
+    navigate('Home' as ScreenName);
   };
 
   const handleWordPress = async (word: string) => {
