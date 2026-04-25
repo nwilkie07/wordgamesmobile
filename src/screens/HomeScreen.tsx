@@ -1,10 +1,20 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert, TextInput, Modal } from 'react-native';
-import { NavigationHeader } from '../components/NavigationHeader';
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { gameDb } from '../db/games';
-import * as Clipboard from 'expo-clipboard';
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  Alert,
+  TextInput,
+  Modal,
+  SafeAreaView,
+} from "react-native";
+import { NavigationHeader } from "../components/NavigationHeader";
+import { useNavigation } from "@react-navigation/native";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { gameDb } from "../db/games";
+import * as Clipboard from "expo-clipboard";
 
 type HomeStackParamList = {
   Home: undefined;
@@ -27,10 +37,11 @@ type HomeStackParamList = {
 };
 
 export default function HomeScreen() {
-  const navigation = useNavigation<NativeStackNavigationProp<HomeStackParamList>>();
-  const [status, setStatus] = useState('');
+  const navigation =
+    useNavigation<NativeStackNavigationProp<HomeStackParamList>>();
+  const [status, setStatus] = useState("");
   const [importModalVisible, setImportModalVisible] = useState(false);
-  const [importText, setImportText] = useState('');
+  const [importText, setImportText] = useState("");
 
   const handleExportLocal = async () => {
     try {
@@ -46,18 +57,21 @@ export default function HomeScreen() {
         cryptoquoteGames: cryptoquote,
         wordleGames: wordle,
         exportedAt: new Date().toISOString(),
-        version: '2.0',
+        version: "2.0",
       };
       const jsonString = JSON.stringify(data, null, 2);
       await Clipboard.setStringAsync(jsonString);
-      Alert.alert('Export', `Exported ${panagram.length} panagram, ${target.length} target, ${ladderle.length} ladderle, ${cryptoquote.length} cryptoquote, ${wordle.length} wordle games`);
+      Alert.alert(
+        "Export",
+        `Exported ${panagram.length} panagram, ${target.length} target, ${ladderle.length} ladderle, ${cryptoquote.length} cryptoquote, ${wordle.length} wordle games`,
+      );
     } catch (e) {
-      Alert.alert('Error', 'Failed to export');
+      Alert.alert("Error", "Failed to export");
     }
   };
 
   const handleImportLocal = () => {
-    setImportText('');
+    setImportText("");
     setImportModalVisible(true);
   };
 
@@ -65,7 +79,7 @@ export default function HomeScreen() {
     try {
       const data = JSON.parse(importText);
       if (!data.panagramGames || !data.targetGames) {
-        Alert.alert('Error', 'Invalid backup file format');
+        Alert.alert("Error", "Invalid backup file format");
         return;
       }
       let panagramCount = 0;
@@ -78,7 +92,7 @@ export default function HomeScreen() {
           await gameDb.panagram.create({
             letters: game.letters,
             centerLetter: game.centerLetter,
-            foundWordsJson: game.foundWordsJson || '[]',
+            foundWordsJson: game.foundWordsJson || "[]",
             score: game.score || 0,
             completed: game.completed || false,
           });
@@ -90,8 +104,8 @@ export default function HomeScreen() {
           await gameDb.target.create({
             letters: game.letters,
             centerLetter: game.centerLetter,
-            letterCounts: game.letterCounts || '{}',
-            foundWordsJson: game.foundWordsJson || '[]',
+            letterCounts: game.letterCounts || "{}",
+            foundWordsJson: game.foundWordsJson || "[]",
             completed: game.completed || false,
           });
           targetCount++;
@@ -102,7 +116,7 @@ export default function HomeScreen() {
           if (game.id && game.targetWord) {
             await gameDb.ladderle.create({
               targetWord: game.targetWord,
-              attemptsJson: game.attemptsJson || '[]',
+              attemptsJson: game.attemptsJson || "[]",
               completed: game.completed || false,
               won: game.won || false,
             });
@@ -115,10 +129,10 @@ export default function HomeScreen() {
           if (game.id && game.encryptedQuote) {
             await gameDb.cryptoquote.create({
               encryptedQuote: game.encryptedQuote,
-              decryptedQuote: game.decryptedQuote || '',
-              author: game.author || '',
-              cipherMapJson: game.cipherMapJson || '{}',
-              decryptedMapJson: game.decryptedMapJson || '{}',
+              decryptedQuote: game.decryptedQuote || "",
+              author: game.author || "",
+              cipherMapJson: game.cipherMapJson || "{}",
+              decryptedMapJson: game.decryptedMapJson || "{}",
               completed: game.completed || false,
             });
             cryptoquoteCount++;
@@ -130,7 +144,7 @@ export default function HomeScreen() {
           if (game.id && game.targetWord) {
             await gameDb.wordle.create({
               targetWord: game.targetWord,
-              guessesJson: game.guessesJson || '[]',
+              guessesJson: game.guessesJson || "[]",
               completed: game.completed || false,
               won: game.won || false,
             });
@@ -138,238 +152,266 @@ export default function HomeScreen() {
           }
         }
       }
-      Alert.alert('Import', `Imported ${panagramCount} panagram, ${targetCount} target, ${ladderleCount} ladderle, ${cryptoquoteCount} cryptoquote, ${wordleCount} wordle games`);
+      Alert.alert(
+        "Import",
+        `Imported ${panagramCount} panagram, ${targetCount} target, ${ladderleCount} ladderle, ${cryptoquoteCount} cryptoquote, ${wordleCount} wordle games`,
+      );
       setImportModalVisible(false);
-      setImportText('');
+      setImportText("");
     } catch (e) {
-      Alert.alert('Error', 'Failed to parse backup data. Make sure you paste the complete export text.');
+      Alert.alert(
+        "Error",
+        "Failed to parse backup data. Make sure you paste the complete export text.",
+      );
     }
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <NavigationHeader />
+      <SafeAreaView style={styles.container}>
+        <NavigationHeader />
 
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={styles.historyButton}
-          onPress={() => navigation.navigate('History')}
-        >
-          <Text style={styles.historyButtonText}>All History</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.historyButton, styles.targetHistoryButton]}
-          onPress={() => navigation.navigate('PanagramHistory')}
-        >
-          <Text style={[styles.historyButtonText, styles.targetHistoryText]}>Panagram History</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.historyButton, styles.ladderleHistoryButton]}
-          onPress={() => navigation.navigate('LadderleHistory')}
-        >
-          <Text style={[styles.historyButtonText, styles.ladderleHistoryText]}>Ladderle History</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.historyButton, styles.cryptoquoteHistoryButton]}
-          onPress={() => navigation.navigate('CryptoquoteHistory')}
-        >
-          <Text style={[styles.historyButtonText, styles.cryptoquoteHistoryText]}>Cryptoquote History</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.historyButton, styles.wordleHistoryButton]}
-          onPress={() => navigation.navigate('WordleHistory')}
-        >
-          <Text style={[styles.historyButtonText, styles.wordleHistoryText]}>Wordle History</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.historyButton, styles.crosswordHistoryButton]}
-          onPress={() => navigation.navigate('CrosswordHistory')}
-        >
-          <Text style={[styles.historyButtonText, styles.crosswordHistoryText]}>Crossword History</Text>
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.backupContainer}>
-        <Text style={styles.sectionTitle}>Backup & Sync</Text>
-
-        <View style={styles.backupSection}>
-          <Text style={styles.label}>Local Backup</Text>
-          <View style={styles.buttonRow}>
-            <TouchableOpacity style={styles.backupButton} onPress={handleExportLocal}>
-              <Text style={styles.backupButtonText}>Export</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.backupButton} onPress={handleImportLocal}>
-              <Text style={styles.backupButtonText}>Import</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        <TouchableOpacity
-          style={styles.aboutLink}
-          onPress={() => navigation.navigate('About')}
-        >
-          <Text style={styles.aboutLinkText}>About WordGames</Text>
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.gameButtonContainer}>
-        <TouchableOpacity
-          style={styles.gameButton}
-          onPress={() => navigation.navigate('PanagramGame', {})}
-        >
-          <Text style={styles.gameButtonText}>7 Letters</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.gameButton, styles.targetButton]}
-          onPress={() => navigation.navigate('TargetGame', {})}
-        >
-          <Text style={styles.gameButtonText}>Target</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.gameButton, styles.ladderleButton]}
-          onPress={() => navigation.navigate('LadderleGame')}
-        >
-          <Text style={styles.gameButtonText}>Ladderle</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.gameButton, styles.cryptoquoteButton]}
-          onPress={() => navigation.navigate('CryptoquoteGame')}
-        >
-          <Text style={styles.gameButtonText}>Cryptoquote</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.gameButton, styles.wordleButton]}
-          onPress={() => navigation.navigate('WordleGame')}
-        >
-          <Text style={styles.gameButtonText}>Wordle</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.gameButton, styles.crosswordButton]}
-          onPress={() => navigation.navigate('CrosswordGame')}
-        >
-          <Text style={styles.gameButtonText}>Crossword</Text>
-        </TouchableOpacity>
-      </View>
-
-      {status ? (
-        <View style={styles.statusBox}>
-          <Text style={styles.statusText}>{status}</Text>
-        </View>
-      ) : null}
-
-      <Modal
-        visible={importModalVisible}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setImportModalVisible(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Import Backup</Text>
-            <Text style={styles.modalDescription}>
-              Paste the exported backup text below:
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={styles.historyButton}
+            onPress={() => navigation.navigate("History")}
+          >
+            <Text style={styles.historyButtonText}>All History</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.historyButton, styles.targetHistoryButton]}
+            onPress={() => navigation.navigate("PanagramHistory")}
+          >
+            <Text style={[styles.historyButtonText, styles.targetHistoryText]}>
+              Panagram History
             </Text>
-            <TextInput
-              style={styles.importInput}
-              multiline
-              numberOfLines={8}
-              value={importText}
-              onChangeText={setImportText}
-              placeholder="Paste backup JSON here..."
-              autoCapitalize="none"
-              autoCorrect={false}
-            />
-            <View style={styles.modalButtons}>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.historyButton, styles.ladderleHistoryButton]}
+            onPress={() => navigation.navigate("LadderleHistory")}
+          >
+            <Text
+              style={[styles.historyButtonText, styles.ladderleHistoryText]}
+            >
+              Ladderle History
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.historyButton, styles.cryptoquoteHistoryButton]}
+            onPress={() => navigation.navigate("CryptoquoteHistory")}
+          >
+            <Text
+              style={[styles.historyButtonText, styles.cryptoquoteHistoryText]}
+            >
+              Cryptoquote History
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.historyButton, styles.wordleHistoryButton]}
+            onPress={() => navigation.navigate("WordleHistory")}
+          >
+            <Text style={[styles.historyButtonText, styles.wordleHistoryText]}>
+              Wordle History
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.historyButton, styles.crosswordHistoryButton]}
+            onPress={() => navigation.navigate("CrosswordHistory")}
+          >
+            <Text
+              style={[styles.historyButtonText, styles.crosswordHistoryText]}
+            >
+              Crossword History
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.backupContainer}>
+          <Text style={styles.sectionTitle}>Backup & Sync</Text>
+
+          <View style={styles.backupSection}>
+            <Text style={styles.label}>Local Backup</Text>
+            <View style={styles.buttonRow}>
               <TouchableOpacity
-                style={styles.modalCancelButton}
-                onPress={() => setImportModalVisible(false)}
+                style={styles.backupButton}
+                onPress={handleExportLocal}
               >
-                <Text style={styles.modalCancelButtonText}>Cancel</Text>
+                <Text style={styles.backupButtonText}>Export</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={styles.modalImportButton}
-                onPress={processImport}
+                style={styles.backupButton}
+                onPress={handleImportLocal}
               >
-                <Text style={styles.modalImportButtonText}>Import</Text>
+                <Text style={styles.backupButtonText}>Import</Text>
               </TouchableOpacity>
             </View>
           </View>
+
+          <TouchableOpacity
+            style={styles.aboutLink}
+            onPress={() => navigation.navigate("About")}
+          >
+            <Text style={styles.aboutLinkText}>About WordGames</Text>
+          </TouchableOpacity>
         </View>
-      </Modal>
-    </ScrollView>
+
+        <View style={styles.gameButtonContainer}>
+          <TouchableOpacity
+            style={styles.gameButton}
+            onPress={() => navigation.navigate("PanagramGame", {})}
+          >
+            <Text style={styles.gameButtonText}>7 Letters</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.gameButton, styles.targetButton]}
+            onPress={() => navigation.navigate("TargetGame", {})}
+          >
+            <Text style={styles.gameButtonText}>Target</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.gameButton, styles.ladderleButton]}
+            onPress={() => navigation.navigate("LadderleGame", {})}
+          >
+            <Text style={styles.gameButtonText}>Ladderle</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.gameButton, styles.cryptoquoteButton]}
+            onPress={() => navigation.navigate("CryptoquoteGame", {})}
+          >
+            <Text style={styles.gameButtonText}>Cryptoquote</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.gameButton, styles.wordleButton]}
+            onPress={() => navigation.navigate("WordleGame", {})}
+          >
+            <Text style={styles.gameButtonText}>Wordle</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.gameButton, styles.crosswordButton]}
+            onPress={() => navigation.navigate("CrosswordGame", {})}
+          >
+            <Text style={styles.gameButtonText}>Crossword</Text>
+          </TouchableOpacity>
+        </View>
+
+        {status ? (
+          <View style={styles.statusBox}>
+            <Text style={styles.statusText}>{status}</Text>
+          </View>
+        ) : null}
+
+        <Modal
+          visible={importModalVisible}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setImportModalVisible(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Import Backup</Text>
+              <Text style={styles.modalDescription}>
+                Paste the exported backup text below:
+              </Text>
+              <TextInput
+                style={styles.importInput}
+                multiline
+                numberOfLines={8}
+                value={importText}
+                onChangeText={setImportText}
+                placeholder="Paste backup JSON here..."
+                autoCapitalize="none"
+                autoCorrect={false}
+              />
+              <View style={styles.modalButtons}>
+                <TouchableOpacity
+                  style={styles.modalCancelButton}
+                  onPress={() => setImportModalVisible(false)}
+                >
+                  <Text style={styles.modalCancelButtonText}>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.modalImportButton}
+                  onPress={processImport}
+                >
+                  <Text style={styles.modalImportButtonText}>Import</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
+      </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   buttonContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginHorizontal: 8,
     marginTop: 8,
     gap: 8,
   },
   historyButton: {
     flex: 1,
-    backgroundColor: '#EBF5FF',
+    backgroundColor: "#EBF5FF",
     borderWidth: 1,
-    borderColor: '#B8D4E8',
+    borderColor: "#B8D4E8",
     borderRadius: 8,
     padding: 12,
-    alignItems: 'center',
+    alignItems: "center",
   },
   historyButtonText: {
-    color: '#2563EB',
-    fontWeight: 'bold',
+    color: "#2563EB",
+    fontWeight: "bold",
     fontSize: 16,
   },
   targetHistoryButton: {
-    backgroundColor: '#FFF7ED',
-    borderColor: '#FED7AA',
+    backgroundColor: "#FFF7ED",
+    borderColor: "#FED7AA",
   },
   targetHistoryText: {
-    color: '#EA580C',
+    color: "#EA580C",
   },
   ladderleHistoryButton: {
-    backgroundColor: '#D1FAE5',
-    borderColor: '#A7F3D0',
+    backgroundColor: "#D1FAE5",
+    borderColor: "#A7F3D0",
   },
   ladderleHistoryText: {
-    color: '#10B981',
+    color: "#10B981",
   },
   cryptoquoteHistoryButton: {
-    backgroundColor: '#EDE9FE',
-    borderColor: '#DDD6FE',
+    backgroundColor: "#EDE9FE",
+    borderColor: "#DDD6FE",
   },
   cryptoquoteHistoryText: {
-    color: '#7C3AED',
+    color: "#7C3AED",
   },
   wordleHistoryButton: {
-    backgroundColor: '#E5E7EB',
-    borderColor: '#D1D5DB',
+    backgroundColor: "#E5E7EB",
+    borderColor: "#D1D5DB",
   },
   wordleHistoryText: {
-    color: '#374151',
+    color: "#374151",
   },
   crosswordHistoryButton: {
-    backgroundColor: '#ECFDF5',
-    borderColor: '#A7F3D0',
+    backgroundColor: "#ECFDF5",
+    borderColor: "#A7F3D0",
   },
   crosswordHistoryText: {
-    color: '#059669',
+    color: "#059669",
   },
   backupContainer: {
     margin: 16,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: "#ddd",
     borderRadius: 12,
   },
   sectionTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 16,
   },
   backupSection: {
@@ -377,139 +419,139 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: "500",
     marginBottom: 8,
   },
   buttonRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 8,
   },
   backupButton: {
-    backgroundColor: '#f5f5f5',
+    backgroundColor: "#f5f5f5",
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderRadius: 8,
   },
   backupButtonText: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontSize: 14,
   },
   aboutLink: {
     marginTop: 16,
     paddingTop: 16,
     borderTopWidth: 1,
-    borderTopColor: '#eee',
+    borderTopColor: "#eee",
   },
   aboutLinkText: {
-    color: '#2563EB',
+    color: "#2563EB",
     fontSize: 14,
-    textAlign: 'center',
+    textAlign: "center",
   },
   gameButtonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+    flexDirection: "row",
+    justifyContent: "space-around",
     padding: 16,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: "#f5f5f5",
     borderWidth: 2,
-    borderColor: '#ddd',
+    borderColor: "#ddd",
     borderRadius: 8,
     marginHorizontal: 8,
   },
   gameButton: {
-    backgroundColor: '#ddd',
+    backgroundColor: "#ddd",
     paddingHorizontal: 24,
     paddingVertical: 16,
     borderRadius: 8,
   },
   targetButton: {
-    backgroundColor: '#FFA500',
+    backgroundColor: "#FFA500",
   },
   ladderleButton: {
-    backgroundColor: '#10B981',
+    backgroundColor: "#10B981",
   },
   cryptoquoteButton: {
-    backgroundColor: '#7C3AED',
+    backgroundColor: "#7C3AED",
   },
   wordleButton: {
-    backgroundColor: '#374151',
+    backgroundColor: "#374151",
   },
   crosswordButton: {
-    backgroundColor: '#059669',
+    backgroundColor: "#059669",
   },
   gameButtonText: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   statusBox: {
-    backgroundColor: '#EFF6FF',
+    backgroundColor: "#EFF6FF",
     padding: 8,
     marginHorizontal: 16,
     marginTop: 16,
     borderRadius: 8,
   },
   statusText: {
-    color: '#2563EB',
+    color: "#2563EB",
     fontSize: 14,
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
   },
   modalContent: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 12,
     padding: 24,
     margin: 24,
-    maxWidth: '90%',
+    maxWidth: "90%",
     width: 340,
   },
   modalTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 8,
   },
   modalDescription: {
     fontSize: 14,
-    color: '#666',
+    color: "#666",
     marginBottom: 16,
   },
   importInput: {
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: "#ddd",
     borderRadius: 8,
     padding: 12,
     height: 150,
-    textAlignVertical: 'top',
+    textAlignVertical: "top",
     fontSize: 12,
-    fontFamily: 'monospace',
+    fontFamily: "monospace",
   },
   modalButtons: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
+    flexDirection: "row",
+    justifyContent: "flex-end",
     gap: 12,
     marginTop: 16,
   },
   modalCancelButton: {
-    backgroundColor: '#E5E7EB',
+    backgroundColor: "#E5E7EB",
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderRadius: 8,
   },
   modalCancelButtonText: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontSize: 14,
   },
   modalImportButton: {
-    backgroundColor: '#2563EB',
+    backgroundColor: "#2563EB",
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderRadius: 8,
   },
   modalImportButtonText: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontSize: 14,
-    color: '#fff',
+    color: "#fff",
   },
 });
