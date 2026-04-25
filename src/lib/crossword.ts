@@ -1,4 +1,5 @@
 import * as SQLite from 'expo-sqlite';
+import { Paths, File } from 'expo-file-system';
 import pako from 'pako';
 
 export interface CrosswordEntry {
@@ -23,13 +24,57 @@ let cluesDb: SQLite.SQLiteDatabase | null = null;
 let cluesCache: Map<string, string> = new Map();
 let loaded = false;
 
+async function decompressGzipAsset(assetName: string, destFileName: string): Promise<string | null> {
+  try {
+    const destFile = new File(Paths.cache, destFileName);
+
+    if (destFile.exists) {
+      console.log(`[crossword] Using cached ${destFileName}`);
+      return destFile.uri;
+    }
+
+    const assetFile = new File(Paths.document, 'assets', assetName);
+
+    if (!assetFile.exists) {
+      console.log(`[crossword] Asset not found: ${assetFile.uri}`);
+      return null;
+    }
+
+    const gzippedBase64 = await assetFile.base64();
+    const binaryString = atob(gzippedBase64);
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+
+    const decompressed = pako.ungzip(bytes);
+
+    await destFile.write(decompressed);
+
+    console.log(`[crossword] Decompressed ${assetName} to ${destFile.uri}`);
+    return destFile.uri;
+  } catch (e) {
+    console.error(`[crossword] Failed to decompress ${assetName}:`, e);
+    return null;
+  }
+}
+
 export async function loadCrosswordData(): Promise<void> {
   if (loaded) return;
 
   try {
-    puzzlesDb = await SQLite.openDatabaseAsync('puzzles.db');
-    cluesDb = await SQLite.openDatabaseAsync('clues.db');
-    console.log('[crossword] Opened puzzles.db and clues.db');
+    const puzzlesPath = await decompressGzipAsset('puzzles.db.gz', 'puzzles.db');
+    const cluesPath = await decompressGzipAsset('clues.db.gz', 'clues.db');
+
+    if (puzzlesPath) {
+      puzzlesDb = await SQLite.openDatabaseAsync(puzzlesPath);
+      console.log('[crossword] Opened puzzles.db');
+    }
+
+    if (cluesPath) {
+      cluesDb = await SQLite.openDatabaseAsync(cluesPath);
+      console.log('[crossword] Opened clues.db');
+    }
   } catch (e) {
     console.error('[crossword] Failed to open databases:', e);
   }
